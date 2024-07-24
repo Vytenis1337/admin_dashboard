@@ -1,53 +1,45 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 
 interface Product {
-  image: string;
   id: number;
   title: string;
-  // Add other properties you expect from the API response if necessary
+  image: string;
 }
-const ProductList = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((res) => res.json())
-      .then((json) => {
-        setProducts(json);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-      });
-  }, []);
+async function getData() {
+  const res = await fetch("https://fakestoreapi.com/products");
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
   }
+
+  return res.json();
+}
+
+export default async function ProductList() {
+  const data: Product[] = await getData();
 
   return (
     <div>
-      <h1>Products</h1>
-      <ul>
-        {products.map((product) => (
-          <div key={product.id}>
-            <li>{product.title}</li>
+      <h1 className="text-2xl font-bold mb-4">Products</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {data.map((product) => (
+          <div
+            key={product.id}
+            className="flex flex-col items-center border p-4 rounded-lg"
+          >
+            <h2 className="text-lg font-semibold mb-2">{product.title}</h2>
             <Image
               src={product.image}
               alt={product.title}
-              width={200} // Adjust width as needed
-              height={200} // Adjust height as needed
+              width={200}
+              height={200}
+              className="object-contain"
             />
           </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
-};
-
-export default ProductList;
+}

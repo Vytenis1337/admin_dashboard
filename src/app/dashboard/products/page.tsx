@@ -1,11 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ProductList from "@/app/components/products/ProductList";
 
 const Products = () => {
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <ProductList />
-    </div>
+    </Suspense>
   );
 };
 
